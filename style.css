@@ -14,6 +14,7 @@ body {
   word-wrap: break-word;
 }
 
-.delete-comment i {
+.delete-comment i:hover {
+  color: #DB3545;
   transition-duration: .25s;
 }

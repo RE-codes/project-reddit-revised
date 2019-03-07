@@ -93,14 +93,6 @@ const ProjectREADit = function () {
     });
   };
 
-  const onHover = function () {
-    $(this).css("color", "#DB3545");
-  };
-
-  const offHover = function () {
-    $(this).css("color", "inherit");
-  };
-
   const loadEventListeners = function () {
     // Add a click event listener to the submit button to create a post
     $(".new-post-button").click(function () {
@@ -132,14 +124,11 @@ const ProjectREADit = function () {
       renderPosts();
       renderComments();
     });
-
-    $(document).on("mouseenter", ".delete-comment i", onHover);
-
-    $(document).on("mouseleave", ".delete-comment i", offHover);
   };
 
   return {
-    start: loadEventListeners
+    start: loadEventListeners,
+    posts
   }
 };
 
