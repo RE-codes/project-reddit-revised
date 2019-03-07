@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Project Reddit</title>
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+    integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="style.css">
@@ -78,6 +79,34 @@
     </div>
   </div>
   <!-- End Modal -->
+  <!-- post template -->
+  <script id="post-template" type="text/x-handlebars-template">
+    <div class="post-content border-bottom">
+      <div class="post pt-3">
+        <h4 class="post-heading"><strong class="user-name">{{name}}</strong><em> says: </em></h4>
+        <p class="lead ml-2">{{message}}</p>
+        <div class="comment-container">
+        </div>
+      </div>
+
+      <div class="form-group text-right">
+        <button type="button" class="leave-comment-button btn btn-secondary btn-sm" data-toggle="modal" data-target="#comment-modal">
+        Leave comment
+        </button>
+        <button type="button" class="delete-post-button btn btn-danger btn-sm">
+        Delete post
+        </button>
+      </div>
+    </div>
+  </script>
+
+  <script id="comment-template" type="text/x-handlebars-template">
+    <div class="comment">
+      <a class="delete-comment ml-4 pr-2 float-left" title="Delete comment"><i class="fas fa-minus-circle"></i></a>
+      <p class="comment-text d-inline-block w-75"><em class="commenter-name">{{name}}</em><strong> comments: </strong>{{comment}}</p>
+    </div>
+  </script>
+
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -88,6 +117,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.0/handlebars.min.js"></script>
   <script src="main.js"></script>
 </body>
 

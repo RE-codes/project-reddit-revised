@@ -1,112 +1,148 @@
+const ProjectREADit = function () {
+  let posts = [];
+  // Initialize the selectedPost variables.
+  let selectedPost = null;
+  // Target the spcific post corresponding to the clicked button. No longer duplicates messages.
+  const findSelectedItem = function (clickedButton) {
+    const index = $(clickedButton)
+      .closest(".post-content")
+      .index();
 
-// *** We want the user to be able to enter a new post into the text box with a user name, and when the submit button is clicked, a new post is generated.
+    selectedPost = posts[index];
+  };
 
-const createPost = function() {
-  // Capture the input from the .user-name and textarea #new-post.
-  const $newPostName = $("#new-post-name").val();
-  const $newPostMessage = $("#new-post-message").val();
-  // Place the newPostText and userName into newPostTemplate
-  const newPostTemplate = `
-    <div class="post-content border-bottom">
-      <div class="post pt-3">
-        <h4 class="post-heading"><strong class="user-name">${$newPostName}</strong><em> says: </em></h4>
-        <p class="lead ml-2">${$newPostMessage}</p>
-      </div>
+  const createPost = function () {
+    // Capture the input from the .user-name and textarea #new-post.
+    const newPostUserName = $("#new-post-name").val();
+    const newPostMessage = $("#new-post-message").val();
+    // append the posts array with the new post obj, if there is content
+    if (newPostUserName !== "" && newPostMessage !== "") {
+      posts.push(
+        {
+          name: newPostUserName,
+          message: newPostMessage,
+          comments: []
+        }
+      );
+    }
+  };
 
-      <div class="form-group text-right">
-        <button type="button" class="leave-comment-button btn btn-secondary btn-sm" data-toggle="modal" data-target="#comment-modal">
-        Leave comment
-        </button>
-        <button type="button" class="delete-post-button btn btn-danger btn-sm">
-        Delete post
-        </button>
-      </div>
-    </div>`;
-  // append the content wrapper with the new post, if there is content
-  if($newPostName !== "" && $newPostMessage !== ""){
-    
-    $(".post-wrapper").append(newPostTemplate);
+  const deletePost = function () {
+    if (confirm("Are you sure you want to permanently delete this entire post and its contents?")) {
+
+      const index = (posts.indexOf(selectedPost));
+      posts.splice(index, 1);
+    };
+  };
+
+  const renderPosts = function () {
+    $(".post-wrapper").empty();
+
+    const newPostTemplate = Handlebars.compile($("#post-template").html());
+
+    posts.forEach(function (post) {
+      const renderedPost = newPostTemplate(post);
+      $(".post-wrapper").append(renderedPost);
+    });
 
     $("#new-post-name").val("");
     $("#new-post-message").val("");
-  }
-};
-
-// *** We now want users to be able to leave comments on each post. When a user clicks 'comments' (above each post) it should toggle the comments and input box visible/hidden.
-
-// Initialize the $selectedPost variable.
-
-let $selectedPost;
-// Target the spcific post corresponding to the clicked button. No longer duplicates messages.
-
-const leaveComment = function() {
-
-  $selectedPost = $(this)
-    .closest(".post-content")
-    .find(".post");
   };
 
-  // *** When a user fills out the two comment inputs and clicks 'Post Comment' it should immediately add the comment to the list of comments.
+  const createComment = function () {
+    // Capture input from the Bootstrap modal input fields
+    const commenterName = $("#commenter-name").val();
+    const commentText = $("#comment-text").val();
+    // append to the related post, only if there is content
+    if (commenterName !== "" && commentText !== "") {
+      selectedPost
+        .comments.push(
+          {
+            name: commenterName,
+            comment: commentText
+          }
+        );
+      $("#commenter-name").val("");
+      $("#comment-text").val("");
+      $("#comment-modal").modal("hide");
+    }
+  };
 
-const createComment = function() {
-  // Capture input from the Bootstrap modal input fields
-  const $commenterName = $("#commenter-name").val();
-  const $commentText = $("#comment-text").val();
-  // Place into commentTemplate
-  const commentTemplate = `
-    <div class="comment">
-      <a class="delete-comment ml-4 pr-2 float-left" title="Delete comment"><i class="fas fa-minus-circle"></i></a>
-      <p class="comment-text d-inline-block w-75"><em class="commenter-name">${$commenterName}</em><strong> comments: </strong>${$commentText}</p>
-    </div>`;
-  // append to the related post, only if there is content
-  if($commentText !== "" && $commenterName !== "") {
+  const deleteComment = function (clickedButton) {
+    if (confirm("Are you sure you want to permanently delete this comment?")) {
+      const index = $(clickedButton).closest(".comment").index();
 
-    $selectedPost.append(commentTemplate);
-    
-    $("#commenter-name").val("");
-    $("#comment-text").val("");
-    // hide comment modal 
-    $("#comment-modal").modal("hide");
+      selectedPost.comments.splice(index, 1);
+    };
+  };
+
+  const renderComments = function () {
+    $(".comment-container").empty();
+    // Place into commentTemplate
+    const commentTemplate = Handlebars.compile($("#comment-template").html());
+
+    posts.forEach(function (post, index) {
+      post.comments.forEach(function (comment) {
+        const renderedComment = commentTemplate(comment);
+        $(".post-wrapper")
+          .find(".post-content")
+          .eq(index)
+          .find(".comment-container")
+          .append(renderedComment);
+      });
+    });
+  };
+
+  const onHover = function () {
+    $(this).css("color", "#DB3545");
+  };
+
+  const offHover = function () {
+    $(this).css("color", "inherit");
+  };
+
+  const loadEventListeners = function () {
+    // Add a click event listener to the submit button to create a post
+    $(".new-post-button").click(function () {
+      createPost();
+      renderPosts();
+      renderComments();
+    });
+
+    $(document).on("click", ".delete-post-button", function () {
+      findSelectedItem(this);
+      deletePost();
+      renderPosts();
+      renderComments();
+    });
+    // Click event listener for the leave comment buttons.
+    $(document).on("click", ".leave-comment-button", function () {
+      findSelectedItem(this);
+    });
+    // Add a click event listener to the modal submit button
+    $("#add-comment-button").click(function () {
+      createComment();
+      renderPosts();
+      renderComments();
+    });
+
+    $(document).on("click", ".delete-comment", function () {
+      findSelectedItem(this);
+      deleteComment(this);
+      renderPosts();
+      renderComments();
+    });
+
+    $(document).on("mouseenter", ".delete-comment i", onHover);
+
+    $(document).on("mouseleave", ".delete-comment i", offHover);
+  };
+
+  return {
+    start: loadEventListeners
   }
 };
 
-// *** When a user clicks the 'x' next to a comment, it should delete it.
+const app = ProjectREADit();
 
-const deleteComment = function() {
-  if(confirm("Are you sure you want to permanently delete this comment?"));
-    $(this)
-      .closest(".comment")
-      .remove();
-};
-
-// *** Lastly, when a user clicks 'remove' above a post, it should remove the post too.
-const deletePost = function() {
-  if(confirm("Are you sure you want to permanently delete this entire post and its contents?"));
-    $(this)
-      .closest(".post-content")
-      .remove();
-};
-
-const onHover = function() {
-  $(this).css("color", "#DB3545");
-};
-
-const offHover = function () {
-  $(this).css("color", "inherit");
-};
-
-
-// Add a click event listener to the submit button to create a post
-$(".new-post-button").click(createPost);
-// Click event listener for the leave comment buttons.
-$(document).on("click", ".leave-comment-button", leaveComment);
-// Add a click event listener to the modal submit button
-$("#add-comment-button").click(createComment);
-
-$(document).on("click", ".delete-comment i", deleteComment);
-
-$(document).on("click", ".delete-post-button", deletePost);
-
-$(document).on("mouseenter", ".delete-comment i", onHover);
-
-$(document).on("mouseleave", ".delete-comment i", offHover);
+app.start();
